@@ -2,72 +2,90 @@ package com.sap.bulletinboard.ads.resources;
 
 import java.net.URI;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.NotFoundException;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.inject.Inject;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
-import javax.ws.rs.core.MediaType;
-
 import com.sap.bulletinboard.ads.models.Advertisement;
+import com.sap.bulletinboard.ads.models.AdvertisementRepository;
 
 @Path(AdvertisementResource.PATH)
 @Produces(MediaType.APPLICATION_JSON)
 public class AdvertisementResource {
-   
-    public static final String PATH = "api/v1.0/ads";   
-    private final Map<Long, Advertisement> ads = new HashMap<Long, Advertisement>();
+    @Inject
+    private AdvertisementRepository ads;
+    public static final String PATH = "api/v1.0/ads";
 
-  /*  public AdvertisementResource(){
-        Advertisement ad1 = new Advertisement("ad1");
-        Advertisement ad2 = new Advertisement("ad2");
-        ads.put((long) 1,ad1);
-        ads.put((long) 2,ad2);
-    }*/
-    
+    //private final Map<Long, Advertisement> ads = new HashMap<>();
+
     @GET
-    public Iterable<Advertisement> getAll() {
-       /* Set set = ads.entrySet();
-        Iterator iterator = set.iterator();
-        return (Iterable<Advertisement>) iterator;*/
-        //return null; //TODO
-        return ads.values();
+    public Iterable<Advertisement> advertisements() {
+        //return ads.values();
+        return ads.findAll();
     }
 
     @GET
     @Path("{id}")
-    public Advertisement getSingle(@PathParam("id") long id) {
-       /* Set set = ads.entrySet();
-        Iterator iterator = set.iterator();
-        Advertisement ad = null;
-        while(iterator.hasNext()){
-            if(((Map.Entry) iterator.next()).getKey().equals(id)){
-                ad = (Advertisement) ((Map.Entry) iterator.next()).getValue();
-                break;
-            }
-        }
-        return ad;*/
-        //return null; //TODO
-        if(!ads.containsKey(id)){
-            throw new NotFoundException();
-        }
-        return ads.get(id);
+    public Advertisement advertisementById( @PathParam("id") long id) {
+        throwIfNonexisting(id);
+        //return ads.get(id);
+        return ads.findOne(id);
     }
 
+    // combine @NotNull and @Valid as null is regarded as valid, but not desired in this setting
     @POST
-    public Response create(Advertisement advertisement) {
-        long id = ads.size();
-        ads.put(id,advertisement);
-        URI location = UriBuilder.fromPath("api/v1.0/ads").path(String.valueOf(id)).build();
-        return Response.created(location).entity(advertisement).build();
+    public Response add( Advertisement advertisement) {
+        //use map ads
+        /*long id = ads.size();
+        ads.put(id, advertisement);
+        URI location = UriBuilder.fromPath(PATH).path(String.valueOf(id)).build();
+        return Response.created(location).entity(advertisement).build();*/
         
+        //use postgres
+        long id = ads.count();
+        Advertisement savedAdvertisement = ads.save(advertisement);
+        URI location = UriBuilder.fromPath(PATH).path(String.valueOf(id)).build();
+        return Response.created(location).entity(savedAdvertisement).build();
+        
+    }
+
+    @DELETE
+    @Path("{id}")
+    public void deleteSingle(@PathParam("id") long id) {
+        throwIfNonexisting(id);
+        //ads.remove(id);
+        
+        ads.delete(id);
+    }
+
+    @DELETE
+    public void deleteAll() {
+        //ads.clear();
+        
+        ads.deleteAll();
+    }
+
+    @PUT
+    @Path("{id}")
+    public Advertisement update(@PathParam("id") long id, Advertisement updatedAd) {
+        throwIfNonexisting(id);
+       /* ads.put(id, updatedAd);
+        return updatedAd;*/
+        
+       // ads.
+        return null;
+    }
+
+    private void throwIfNonexisting(long id) {
+        /*if (!ads.containsKey(id)) {
+            throw new NotFoundException();
+        }*/
+        if (!ads.exists(id)) {
+            throw new NotFoundException();
+        }
     }
 }
