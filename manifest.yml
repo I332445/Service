@@ -9,6 +9,8 @@ applications:
       # This may help with slow startup times, especially when using Spring Boot.
       JAVA_OPTS: -Djava.security.egd=file:///dev/./urandom
 services:
-- postgres-bulletinboard-ads      
+- postgres-bulletinboard-ads   
+env:
+    USER_ROUTE: 'https://bulletinboard-users-production.cfapps.sap.hana.ondemand.com'
 
       

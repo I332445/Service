@@ -5,6 +5,7 @@ import java.util.Date;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+
 //import javax.validation.constraints.NotNull;
 
 @Entity
@@ -14,12 +15,19 @@ public class Advertisement {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @Override
+    public String toString() {
+        return "Advertisement [id=" + id + ", title=" + title + "]";
+    }
+
     @NotNull
     @Column(name = "_title")
     private String title;
     
-    private Timestamp createdAt;
-    private Timestamp updatedAt;
+    //private Timestamp createdAt;
+    //private Timestamp updatedAt;
+    
+    
 
     public Advertisement() {
     }
@@ -40,13 +48,13 @@ public class Advertisement {
         return id;
     }
     
-    public Timestamp getCreatedAt(){
+   /* public Timestamp getCreatedAt(){
         return createdAt;
     }
     
     public Timestamp getUpdatedAt(){
         return updatedAt;
-    }
+    }*/
     
     protected Timestamp now() {                     // use java.sql.Timestamp
         return new Timestamp((new Date()).getTime()); // use java.util.Date

@@ -18,6 +18,8 @@ import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.sap.bulletinboard.ads.config.CloudDatabaseConfig;
 import com.sap.bulletinboard.ads.resources.AdvertisementResource;
 import com.sap.bulletinboard.ads.resources.DefaultResource;
+import com.sap.bulletinboard.ads.services.UserServiceClient;
+import com.sap.hcp.cf.logging.servlet.filter.RequestLoggingFilter;
 
 //import com.sap.bulletinboard.ads.util.CustomValidationExceptionMapper;
 
@@ -41,8 +43,11 @@ public class ContextListener implements ServletContextListener {
         // register Apache CXF as servlet
         ServletRegistration.Dynamic dispatcher = event.getServletContext().addServlet("CXFServlet", CXFServlet.class);
         dispatcher.setLoadOnStartup(LOAD_ON_STARTUP);
-        //dispatcher.addMapping("/*");
-        dispatcher.addMapping("/Vicky/*");
+        dispatcher.addMapping("/*");
+        //dispatcher.addMapping("/Vicky/*");
+        
+     // register logging servlet filter which logs HTTP request processing details
+        event.getServletContext().addFilter("RequestLoggingFilter", RequestLoggingFilter.class).addMappingForUrlPatterns(null, false, "/*");
 
         // necessary to make Apache CXF work with Spring
         // see https://stackoverflow.com/questions/34499352/why-do-i-need-to-set-root-web-application-context-attribute-in-servletcontext/34499567#34499567
@@ -82,6 +87,7 @@ public class ContextListener implements ServletContextListener {
         // make environment variables available for Spring's @Value annotation
         classes.add(PropertySourcesPlaceholderConfigurer.class);
         classes.add(CloudDatabaseConfig.class);
+        classes.add(UserServiceClient.class);
 
         return classes.toArray(new Class[classes.size()]);
     }

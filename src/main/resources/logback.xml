@@ -12,7 +12,8 @@
     </appender>
 
     <root level="${LOG_ROOT_LEVEL:-WARN}">
-        <appender-ref ref="${APPENDER:-STDOUT}"/>
+       <!-- <appender-ref ref="${APPENDER:-STDOUT}"/> --> 
+         <appender-ref ref="${APPENDER:-STDOUT-JSON}"/>
     </root>
 
     <logger name="com.sap.bulletinboard" level="${LOG_APP_LEVEL:-INFO}"/>

@@ -183,6 +183,13 @@
             <version>1.4.184</version>
             <scope>test</scope>
         </dependency>
+        <!-- Resilience and asynchronous requests -->
+		<dependency>
+		    <groupId>com.netflix.hystrix</groupId>
+		    <artifactId>hystrix-core</artifactId>
+		    <version>1.4.23</version>
+		</dependency>
+        
     </dependencies>
     <build>
         <finalName>bulletinboard-ads</finalName>
